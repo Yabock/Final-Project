@@ -6,6 +6,7 @@ TagManager:
   tags:
   - RubyController
   - CogAmmo
+  - Oil
   layers:
   - Default
   - TransparentFX

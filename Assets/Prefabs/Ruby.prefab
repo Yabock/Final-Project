@@ -116,6 +116,8 @@ MonoBehaviour:
   rubyHitClip: {fileID: 8300000, guid: c602dff7986bff447b5d0109e0762504, type: 3}
   winClip: {fileID: 8300000, guid: f17c5809874d30f48bf0290e3a0a77e7, type: 3}
   loseClip: {fileID: 8300000, guid: 58898671835d74b43be27b103611729f, type: 3}
+  cogPickup: {fileID: 0}
+  jambiTalk: {fileID: 8300000, guid: bb81bd872255b6a4a9ed6869f9872e76, type: 3}
   backgroundmusic: {fileID: 0}
 --- !u!50 &4570220706074298962
 Rigidbody2D:

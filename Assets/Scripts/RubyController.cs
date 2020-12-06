@@ -24,10 +24,13 @@ public class RubyController : MonoBehaviour
     public Text winText;
     public Text restartText;
     public Text cogCountText;
+    public Text radioText;
 
     bool gameOver = false;
     bool gameWin = false;
     bool gameLose = false;
+    bool winRadio = false;
+    static bool radioTalk = false;
 
     public static int level;
 
@@ -49,6 +52,8 @@ public class RubyController : MonoBehaviour
     public AudioClip rubyHitClip;
     public AudioClip winClip;
     public AudioClip loseClip;
+    public AudioClip cogPickup;
+    public AudioClip jambiTalk;
 
     public GameObject backgroundmusic;
 
@@ -70,7 +75,9 @@ public class RubyController : MonoBehaviour
         scoreText.text = "Fixed Robots: " + score.ToString();
         winText.text = "";
         restartText.text = "";
+        radioText.text = "";
         cogcount = 4;
+        winRadio = false;
 
     }
 
@@ -79,6 +86,8 @@ public class RubyController : MonoBehaviour
     {
         horizontal = Input.GetAxis("Horizontal");
         vertical = Input.GetAxis("Vertical");  
+
+        
 
         Vector2 move = new Vector2(horizontal, vertical); 
 
@@ -117,14 +126,35 @@ public class RubyController : MonoBehaviour
             if (hit.collider != null)
             {
                 NonPlayerCharacter character = hit.collider.GetComponent<NonPlayerCharacter>();
+                
                 if (character != null)
                 {
                     character.DisplayDialog();
+                    audioSource.PlayOneShot(jambiTalk);
                     if(score == 4)
                     {
                         level = 1;
+                        radioTalk = true;
                         SceneManager.LoadScene("MainScene1");
                         
+                    }
+                }
+
+                if (level == 1)
+                {
+                    RadioNPC character2 = hit.collider.GetComponent<RadioNPC>();
+                    RadioBrokeNPC character3 = hit.collider.GetComponent<RadioBrokeNPC>();
+                    
+                    if (character2 != null)
+                    {
+                        radioTalk = false;
+                        character2.DisplayDialog();
+                        audioSource.PlayOneShot(jambiTalk);
+                    }
+                    if (character3 != null)
+                    {
+                        character3.Fix();
+                        audioSource.PlayOneShot(jambiTalk);
                     }
                 }
             }
@@ -142,12 +172,24 @@ public class RubyController : MonoBehaviour
 
         if (level == 1)
         {
+            if (radioTalk == true)
+            {
+                radioText.text = "Go speak with the dancing radio it has a quest for you!";
+            }
+            if (radioTalk == false)
+            {
+                radioText.text = "";
+            }
             if (score == 4)
             {
-                gameWin = true;
-                winText.text = "You Win! Game created by Matthew Reuter.";
-                restartText.text = "Press R to restart or ESC to close the game";
-                gameOver = true;
+                if(winRadio == true)
+                {
+                    gameWin = true;
+                    winText.text = "You Win! Game created by Matthew Reuter.";
+                    restartText.text = "Press R to restart or ESC to close the game";
+                    gameOver = true;
+                    radioText.text = "";
+                }
             }
         }
 
@@ -168,6 +210,7 @@ public class RubyController : MonoBehaviour
         {
             winText.text = "You Lose! Game created by Matthew Reuter.";
             restartText.text = "Press R to restart or ESC to close the game";
+            radioText.text = "";
             speed = 0;
             gameOver = true;
             
@@ -177,6 +220,7 @@ public class RubyController : MonoBehaviour
         {
             winText.text = "You Win! Game created by Matthew Reuter.";
             restartText.text = "Press R to restart or ESC to close the game";
+            radioText.text = "";
             gameOver = true;
             
         }
@@ -203,8 +247,27 @@ public class RubyController : MonoBehaviour
         {
             other.gameObject.SetActive(false);
             cogcount = cogcount + 4;
+            audioSource.PlayOneShot(cogPickup);
+        }
+
+    }
+
+    void OnTriggerStay2D(Collider2D other)
+    {
+        if (other.gameObject.CompareTag("Oil"))
+        {
+            speed = 1.0f;
+        }  
+    }
+
+    void OnTriggerExit2D(Collider2D other)
+    {
+         if (other.gameObject.CompareTag("Oil"))
+        {
+            speed = 3.0f;
         }
     }
+
 
 
     void FixedUpdate()
@@ -277,6 +340,14 @@ public class RubyController : MonoBehaviour
         }
 
         
+    }
+
+    public void RadioFix (int radioFix)
+    {
+        if (radioFix > 0)
+        {
+            winRadio = true;
+        }
     }
 
     void Launch()
